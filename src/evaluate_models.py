@@ -7,6 +7,12 @@ Usage:
     python evaluate_models.py --task sentiment
     python evaluate_models.py --task type
     python evaluate_models.py --task situation
+
+Outputs (all written relative to the repo root):
+    images/metrics_{task}.png
+    images/confusion_matrices_{task}.png
+    images/metrics_{task}.csv          # tidy long-format, ready for R/ggplot2
+    images/confusion_{task}.csv        # tidy long-format confusion data for R
 """
 
 import os
@@ -20,6 +26,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score, confusion_matrix
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from train import stratified_split
+
+# Output directory for all images and CSVs — relative to src/, so ../images/
+IMAGES_DIR = "../images"
 
 
 TASK_CONFIGS = {
@@ -84,6 +93,8 @@ def evaluate_models(task: str, models_dir: str = None):
     cfg = TASK_CONFIGS[task]
     models_dir = models_dir or cfg["models_dir"]
 
+    os.makedirs(IMAGES_DIR, exist_ok=True)
+
     df = pd.read_csv(cfg["data"])
     if cfg["preprocess"]:
         df = cfg["preprocess"](df)
@@ -140,12 +151,19 @@ def evaluate_models(task: str, models_dir: str = None):
         display = {k: v for k, v in metrics.items() if not k.startswith("_")}
         print(f"  {model_name}: {display}")
 
-    _plot_results(results, title=f"Model Comparison — {task}")
+    _plot_results(results, task=task)
     _plot_confusion_matrices(results, task=task, label_names=label_names)
+    _export_metrics_csv(results, task=task)
+    _export_confusion_csv(results, task=task, label_names=label_names)
+
     return results
 
 
-def _plot_results(results: dict, title: str):
+# ---------------------------------------------------------------------------
+# Plots
+# ---------------------------------------------------------------------------
+
+def _plot_results(results: dict, task: str):
     clean = {m: {k: v for k, v in metrics.items() if not k.startswith("_")}
              for m, metrics in results.items()}
     model_names  = list(clean.keys())
@@ -161,12 +179,15 @@ def _plot_results(results: dict, title: str):
 
     plt.xticks(x + bar_width * (len(metric_names) - 1) / 2, model_names, rotation=45, ha="right")
     plt.ylabel("Score")
-    plt.title(title)
+    plt.title(f"Model Comparison — {task}")
     plt.ylim(0, 1)
     plt.legend()
     plt.tight_layout()
-    plt.savefig(f"{title.replace(' ', '_').replace('—', '-')}.png", dpi=150)
+
+    fname = os.path.join(IMAGES_DIR, f"metrics_{task}.png")
+    plt.savefig(fname, dpi=150)
     plt.close()
+    print(f"Saved metrics plot    → {fname}")
 
 
 def _plot_confusion_matrices(results: dict, task: str, label_names: list = None):
@@ -200,10 +221,70 @@ def _plot_confusion_matrices(results: dict, task: str, label_names: list = None)
 
     fig.suptitle(f"Confusion Matrices — {task}", fontsize=11)
     plt.tight_layout()
-    fname = f"confusion_matrices_{task}.png"
+
+    fname = os.path.join(IMAGES_DIR, f"confusion_matrices_{task}.png")
     plt.savefig(fname, dpi=150)
     plt.close()
-    print(f"Saved confusion matrices → {fname}")
+    print(f"Saved confusion plot  → {fname}")
+
+
+# ---------------------------------------------------------------------------
+# CSV exports for R
+# ---------------------------------------------------------------------------
+
+def _export_metrics_csv(results: dict, task: str):
+    """
+    Tidy long-format metrics table. In R/ggplot2:
+
+        df <- read.csv("images/metrics_human.csv")
+        ggplot(df, aes(x=model, y=value, fill=metric)) +
+            geom_col(position="dodge") +
+            facet_wrap(~task)
+    """
+    rows = []
+    for model_name, metrics in results.items():
+        for metric in ("F1", "Accuracy", "Precision", "Recall"):
+            rows.append({
+                "task":   task,
+                "model":  model_name,
+                "metric": metric,
+                "value":  round(metrics[metric], 6),
+            })
+
+    fname = os.path.join(IMAGES_DIR, f"metrics_{task}.csv")
+    pd.DataFrame(rows).to_csv(fname, index=False)
+    print(f"Saved metrics CSV     → {fname}")
+
+
+def _export_confusion_csv(results: dict, task: str, label_names: list = None):
+    """
+    Tidy long-format confusion matrix. In R/ggplot2:
+
+        df <- read.csv("images/confusion_human.csv")
+        ggplot(df, aes(x=predicted, y=true, fill=count)) +
+            geom_tile() +
+            geom_text(aes(label=count)) +
+            facet_wrap(~model) +
+            scale_fill_gradient(low="white", high="steelblue")
+    """
+    rows = []
+    for model_name, metrics in results.items():
+        cm = confusion_matrix(metrics["_labels"], metrics["_preds"])
+        for i in range(len(cm)):
+            for j in range(len(cm[i])):
+                true_lbl = label_names[i] if label_names else str(i)
+                pred_lbl = label_names[j] if label_names else str(j)
+                rows.append({
+                    "task":      task,
+                    "model":     model_name,
+                    "true":      true_lbl,
+                    "predicted": pred_lbl,
+                    "count":     int(cm[i, j]),
+                })
+
+    fname = os.path.join(IMAGES_DIR, f"confusion_{task}.csv")
+    pd.DataFrame(rows).to_csv(fname, index=False)
+    print(f"Saved confusion CSV   → {fname}")
 
 
 if __name__ == "__main__":
