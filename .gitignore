@@ -1,0 +1,7 @@
+models/
+data/output/
+data/contexts/
+__pycache__/
+*.pyc
+.env
+*.png
