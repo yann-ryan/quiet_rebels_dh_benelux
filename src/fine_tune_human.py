@@ -32,7 +32,7 @@ MODEL_CONFIGS = [
 def main(data_path: str, output_root: str, test_size: float, seed: int, cv_folds: int):
     df = pd.read_csv(data_path)
     df = df[df["label"] != 2].reset_index(drop=True)   # drop AMBIGUOUS
-
+    df = df.drop_duplicates(subset="text").reset_index(drop=True)
     train_df, test_df = train_test_split(df, test_size=test_size, random_state=seed)
     train_dataset = Dataset.from_pandas(train_df.reset_index(drop=True))
     test_dataset  = Dataset.from_pandas(test_df.reset_index(drop=True))

@@ -29,6 +29,7 @@ MODEL_CONFIGS = [
 
 def main(data_path: str, output_root: str, test_size: float, seed: int, cv_folds: int):
     df = pd.read_csv(data_path)
+    df = df.drop_duplicates(subset="text").reset_index(drop=True)
     split = stratified_split(df, test_size=test_size, seed=seed)
 
     for checkpoint, lr, epochs, bf16, grad_accum in MODEL_CONFIGS:

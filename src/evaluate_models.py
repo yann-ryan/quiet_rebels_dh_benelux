@@ -98,6 +98,7 @@ def evaluate_models(task: str, models_dir: str = None):
     df = pd.read_csv(cfg["data"])
     if cfg["preprocess"]:
         df = cfg["preprocess"](df)
+    df = df.drop_duplicates(subset="text").reset_index(drop=True)
     if cfg["stratified"]:
         split = stratified_split(df, test_size=cfg["test_size"], seed=cfg["seed"])
         test_dataset = split["test"]

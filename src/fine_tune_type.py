@@ -39,6 +39,7 @@ def main(data_path: str, output_root: str, test_size: float, seed: int, cv_folds
     df = df[df["label"] != 2].copy()                    # drop CHILDREN (2 samples)
     df["label"] = df["label"].map(LABEL_REMAP)
     df = df.reset_index(drop=True)
+    df = df.drop_duplicates(subset="text").reset_index(drop=True)
     split = stratified_split(df, test_size=test_size, seed=seed)
 
     for checkpoint, lr, epochs, bf16, grad_accum in MODEL_CONFIGS:

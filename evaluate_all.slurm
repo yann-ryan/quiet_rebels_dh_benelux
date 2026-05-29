@@ -2,7 +2,7 @@
 #SBATCH --job-name=evaluate_all
 #SBATCH --mail-user="y.c.ryan@hum.leidenuniv.nl"
 #SBATCH --mail-type="ALL"
-#SBATCH --time=01:00:00
+#SBATCH --time=00:30:00
 #SBATCH --partition=gpu-short
 #SBATCH --gres=gpu:1
 #SBATCH --mem=16G
@@ -18,7 +18,7 @@ pip install -r requirements.txt
 cd src
 
 python evaluate_models.py --task human
+python evaluate_models.py --task crowd
 python evaluate_models.py --task sentiment
 python evaluate_models.py --task type
 python evaluate_models.py --task situation
-python evaluate_models.py --task crowd

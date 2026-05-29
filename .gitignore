@@ -5,3 +5,7 @@ __pycache__/
 *.pyc
 .env
 *.png
+diagnose.slurm
+evaluate_all.slurm
+fine-tune_all.slurm
+inference.slurm

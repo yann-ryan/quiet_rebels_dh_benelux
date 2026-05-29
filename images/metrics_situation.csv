@@ -1,5 +1,5 @@
 task,model,metric,value
-situation,bert-base-historic-dutch-cased,F1,0.792693
-situation,bert-base-historic-dutch-cased,Accuracy,0.792079
-situation,bert-base-historic-dutch-cased,Precision,0.764846
-situation,bert-base-historic-dutch-cased,Recall,0.832924
+situation,bert-base-historic-dutch-cased,F1,0.159788
+situation,bert-base-historic-dutch-cased,Accuracy,0.257426
+situation,bert-base-historic-dutch-cased,Precision,0.252911
+situation,bert-base-historic-dutch-cased,Recall,0.268262
