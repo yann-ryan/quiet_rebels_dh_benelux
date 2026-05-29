@@ -1,0 +1,5 @@
+task,model,metric,value
+type,bert-base-historic-dutch-cased,F1,0.51165
+type,bert-base-historic-dutch-cased,Accuracy,0.571429
+type,bert-base-historic-dutch-cased,Precision,0.565369
+type,bert-base-historic-dutch-cased,Recall,0.520813

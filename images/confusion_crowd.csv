@@ -1,0 +1,17 @@
+task,model,true,predicted,count
+crowd,bert-base-historic-dutch-cased,ABSTRACT,ABSTRACT,122
+crowd,bert-base-historic-dutch-cased,ABSTRACT,CROWD,6
+crowd,bert-base-historic-dutch-cased,CROWD,ABSTRACT,18
+crowd,bert-base-historic-dutch-cased,CROWD,CROWD,152
+crowd,multilingual-e5-base,ABSTRACT,ABSTRACT,120
+crowd,multilingual-e5-base,ABSTRACT,CROWD,8
+crowd,multilingual-e5-base,CROWD,ABSTRACT,14
+crowd,multilingual-e5-base,CROWD,CROWD,156
+crowd,bert-base-multilingual-uncased,ABSTRACT,ABSTRACT,115
+crowd,bert-base-multilingual-uncased,ABSTRACT,CROWD,13
+crowd,bert-base-multilingual-uncased,CROWD,ABSTRACT,9
+crowd,bert-base-multilingual-uncased,CROWD,CROWD,161
+crowd,robbert-v2-dutch-base,ABSTRACT,ABSTRACT,117
+crowd,robbert-v2-dutch-base,ABSTRACT,CROWD,11
+crowd,robbert-v2-dutch-base,CROWD,ABSTRACT,14
+crowd,robbert-v2-dutch-base,CROWD,CROWD,156

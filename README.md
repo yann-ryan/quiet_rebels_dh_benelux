@@ -1,23 +1,29 @@
-# Quiet Rebels — Sentiment & Crowd Classification
+# Code and training data for the conference paper Using Large Language Models to understand ‘the masses’ in nineteenth-century Dutch newspapers 
 
 Fine-tuning pipeline for detecting human references, crowd mentions, sentiment,
-crowd type, and situation in historical Dutch newspaper text (Delpher corpus).
+crowd type, and situation Delpher, presented at DH Benelux 2026. 
+
+[add zenodo doi here]
 
 ---
 
 ## Pipeline overview
 
 ```
-Stage 1   Annotate massa_labels2.csv
-          → fine-tune human/non-human models (AMBIGUOUS rows dropped)
+Stage 1   Select 1000 examples at random from 1870-1880. Word 'massa' and a context window of 40 tokens on either side. (`massa_labels2.csv`)
 
-Stage 2a  Annotate human_labelled_sentiment.csv (human rows only)
+Stage 1   Annotate `massa_labels2.csv` as human/non-human/ambiguous sense
+          → fine-tune human/non-human models (AMBIGUOUS rows dropped). 
+    
+Stage 3   Use model to generate predictions for all of 1870-1880 corpus, select 300 high-confidence human sense. This is used for the `human_labelled_` training datasets. 
+
+Stage 2a  Annotate human_labelled_sentiment.csv
           → fine-tune sentiment models
 
-Stage 2b  Annotate human_labelled_type.csv (human rows only)
+Stage 2b  Annotate human_labelled_type.csv
           → fine-tune crowd-type models
 
-Stage 2c  Annotate human_labelled_situation.csv (human rows only)
+Stage 2c  Annotate human_labelled_situation.csv
           → fine-tune situation models
 
 Stage 3   Run human/non-human inference on full Delpher corpus
@@ -25,7 +31,7 @@ Stage 3   Run human/non-human inference on full Delpher corpus
           → annotate crowds_df2.csv
           → fine-tune crowd/abstract models
 
-Stage 4   Run all four classifiers on the full Delpher corpus
+Stage 4   Run all five classifiers on the full Delpher corpus
           → data/output/all_massa_inference.csv
 ```
 
@@ -163,17 +169,3 @@ All default paths can be overridden with `--data`, `--output-root`, `--test-size
 
 ---
 
-## Known issues fixed from original notebooks
-
-| Original bug | Fix |
-|---|---|
-| `fine_tune_human_nonhuman.ipynb` mDeBERTa cell used `num_labels=2` for a 3-class task | Removed mDeBERTa from human task; num_labels matches id2label throughout |
-| Same cell saved to `crowd/` instead of `human/` | Fixed in `fine_tune_human.py` |
-| `fine_tune_human.ipynb` cell 10 saved multilingual-uncased model as `bert-base-historic-dutch-cased` | Each model saves to its own named directory |
-| `fine_tune_type.ipynb` used `num_labels=7` with a 3-class id2label | Fixed to `num_labels=3` in `fine_tune_type.py` |
-| `fine_tune_situation.ipynb` used `num_labels=5` with a 3-class id2label | Fixed to `num_labels=3` in `fine_tune_situation.py` |
-| AMBIGUOUS class (label=2) in human task never predicted — severe accuracy/F1 gap | Rows with label=2 dropped before training; task is now binary |
-| Inconsistent test splits (0.2 vs 0.4) across notebooks | Standardised to 0.4 everywhere |
-| `evaluate_models.py` shadowed HuggingFace `evaluate` package | Renamed from `evaluate.py` |
-| `fp16=True` caused `ValueError: Attempting to unscale FP16 gradients` | Replaced with `bf16` for models that need mixed precision |
-| Saved tokenizer directories missing `tokenizer.json` caused sentencepiece errors on reload | `use_fast=False` in `evaluate_models.py` tokenizer loading |

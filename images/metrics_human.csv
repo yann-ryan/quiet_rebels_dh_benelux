@@ -1,0 +1,17 @@
+task,model,metric,value
+human,bert-base-historic-dutch-cased,F1,0.994159
+human,bert-base-historic-dutch-cased,Accuracy,0.99435
+human,bert-base-historic-dutch-cased,Precision,0.995238
+human,bert-base-historic-dutch-cased,Recall,0.993151
+human,multilingual-e5-base,F1,0.935171
+human,multilingual-e5-base,Accuracy,0.937853
+human,multilingual-e5-base,Precision,0.941244
+human,multilingual-e5-base,Recall,0.930782
+human,bert-base-multilingual-uncased,F1,0.926914
+human,bert-base-multilingual-uncased,Accuracy,0.929379
+human,bert-base-multilingual-uncased,Precision,0.928363
+human,bert-base-multilingual-uncased,Recall,0.925612
+human,robbert-v2-dutch-base,F1,0.956241
+human,robbert-v2-dutch-base,Accuracy,0.957627
+human,robbert-v2-dutch-base,Precision,0.956723
+human,robbert-v2-dutch-base,Recall,0.955776
