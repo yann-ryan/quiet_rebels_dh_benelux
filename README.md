@@ -12,26 +12,26 @@ crowd type, and situation Delpher, presented at DH Benelux 2026.
 ```
 Stage 1   Select 1000 examples at random from 1870-1880. Word 'massa' and a context window of 40 tokens on either side. (`massa_labels2.csv`)
 
-Stage 1   Annotate `massa_labels2.csv` as human/non-human/ambiguous sense
+Stage 2   Annotate `massa_labels2.csv` as human/non-human/ambiguous sense
           → fine-tune human/non-human models (AMBIGUOUS rows dropped). 
     
 Stage 3   Use model to generate predictions for all of 1870-1880 corpus, select 300 high-confidence human sense. This is used for the `human_labelled_` training datasets. 
 
-Stage 2a  Annotate human_labelled_sentiment.csv
+Stage 4a  Annotate human_labelled_sentiment.csv
           → fine-tune sentiment models
 
-Stage 2b  Annotate human_labelled_type.csv
+Stage 4b  Annotate human_labelled_type.csv
           → fine-tune crowd-type models
 
-Stage 2c  Annotate human_labelled_situation.csv
+Stage 4c  Annotate human_labelled_situation.csv
           → fine-tune situation models
 
-Stage 3   Run human/non-human inference on full Delpher corpus
+Stage 5   Run human/non-human inference on full Delpher corpus
           → sample 2000 HUMAN results, remove advertisements
           → annotate crowds_df2.csv
           → fine-tune crowd/abstract models
 
-Stage 4   Run all five classifiers on the full Delpher corpus
+Stage 6   Run all five classifiers on the full Delpher corpus
           → data/output/all_massa_inference.csv
 ```
 
